@@ -239,7 +239,8 @@ contract PrizePool is Ownable {
         uint256 table_id;
         address [] players;
         string status;
-        string game_type;
+        string game_level;
+        uint256 game_type;
     }
     event Deposit(address player, uint256 amount, uint256 game_id);
     mapping (uint256 => Game) public game_list;
@@ -247,27 +248,27 @@ contract PrizePool is Ownable {
     uint256 public game_count = 0;
     constructor (address addr) public { cue = IERC20(addr); }
 
-    function createGame() public {
-        Game memory new_game = Game({table_id: game_count, players: new address[](0), status: "created", game_type: "amatuer"});
+    function createGame(uint256 amount, string memory game_level, uint256 game_type ) public {
+        Game memory new_game = Game({ table_id: game_count, players: new address[](0), status: "created", game_level: game_level, game_type: game_type});
         game_list[game_count] = new_game;
+        joinGame(amount, game_count);
         game_count++;
     }
     
-    function deposit(uint256 amount, uint256 game_id) public {
-        require(game_count>game_id, "this game is not created!");
+    function joinGame(uint256 amount, uint256 game_id) public {
+        require(game_count>=game_id, "this game is not created!");
         require(keccak256(abi.encodePacked((game_list[game_id].status)))== keccak256(abi.encodePacked(("created"))), "this game already started or finished");
         game_list[game_id].players.push(msg.sender);
-        balances[msg.sender].add(amount);
-        deposited_balances[game_id].add(amount);
+        balances[msg.sender] = balances[msg.sender].add(amount);
+        deposited_balances[game_id] = deposited_balances[game_id].add(amount);
         //require(cue.balanceOf(msg.sender) >= amount,"balance is low");
         cue.transferFrom(msg.sender, address(this), amount);
         emit Deposit(msg.sender, amount, game_id);
     }
     
-    function getGame(uint256 game_id) public view returns (uint256, address[] memory, string memory, string memory) {
+    function getGame(uint256 game_id) public view returns (uint256, address[] memory, string memory, uint256) {
         return (game_list[game_id].table_id, game_list[game_id].players, game_list[game_id].status, game_list[game_id].game_type);
     }
-
     function depositedAmount(uint256 game_id) public view returns(uint256) {
         return deposited_balances[game_id];
     }
