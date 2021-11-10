@@ -1,5 +1,4 @@
-// This is a script for deploying your contracts. You can adapt it to deploy
-// yours, or create new ones.
+
 async function main() {
   // This is just a convenience check
   if (network.name === "hardhat") {
@@ -19,8 +18,8 @@ async function main() {
 
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
-  const Token = await ethers.getContractFactory("ESP");
-  const token = await Token.deploy();
+  const Token = await ethers.getContractFactory("PrizePool");
+  const token = await Token.deploy("0xC6b24468F8B6C2832C11b5223252A2D5885A761a");
   await token.deployed();
 
   console.log("Token address:", token.address);
