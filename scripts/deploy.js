@@ -16,10 +16,11 @@ async function main() {
     await deployer.getAddress()
   );
 
+  
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
-  const Token = await ethers.getContractFactory("PrizePool");
-  const token = await Token.deploy("0xC6b24468F8B6C2832C11b5223252A2D5885A761a");
+  const Token = await ethers.getContractFactory("ESkillzStraightBet");
+  const token = await Token.deploy("0x5C30ebda6606abc80A6E5805BB057ece418146d6");
   await token.deployed();
 
   console.log("Token address:", token.address);
